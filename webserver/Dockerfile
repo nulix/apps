@@ -1,9 +1,9 @@
 FROM nginx:alpine
 
-LABEL org.opencontainers.image.description="nginx web server demo app"
+LABEL org.opencontainers.image.description="nginx web server demo app with NULIX content"
 
 # uncomment for OTA update test
-#COPY webserver/index.html /usr/share/nginx/html/
+COPY webserver/index.html /usr/share/nginx/html/
 
 ### BUILD ###
 # docker build -t ghcr.io/nulix/webserver:1.0 webserver
