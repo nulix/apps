@@ -1,34 +1,28 @@
-on: [push]
+on:
+  push:
+  workflow_dispatch:
+    inputs:
+      machine:
+        description: 'Override the default MACHINE value'
+        required: false
+        type: string
 
 env:
-  MACHINE: rpi3
-  NULIX_OS_VER: 1.3.1
+  MACHINE: ${{ github.event.inputs.machine || 'rpi3' }}
 
 jobs:
   build-os:
     runs-on: ubuntu-latest
-    name: Build NULIX OS with apps
+    name: Build NULIX OS with custom apps
     steps:
-      - name: Prepare NULIX OS build action version
-        run: echo "ACTION_VER=v${{ env.NULIX_OS_VER }}" >> $GITHUB_ENV
-      - name: Checkout compose file
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           sparse-checkout: docker-compose.yml
-      - name: Fetch base NULIX OS
-        uses: nulix/os-with-apps-action@${ACTION_VER}
+      - name: Build NULIX OS with custom apps
+        uses: nulix/os-action@v0.0.1
         with:
-          step_name: fetch-base-os
-          machine: ${{ env.MACHINE }}
-      - name: Inject custom apps
-        uses: nulix/os-with-apps-action@${ACTION_VER}
-        with:
-          step_name: inject-apps
-          machine: ${{ env.MACHINE }}
-      - name: Build OS image
-        uses: nulix/os-with-apps-action@${ACTION_VER}
-        with:
-          step_name: build-os-image
+          step_name: build-os
           machine: ${{ env.MACHINE }}
       - name: Upload OS image
         uses: actions/upload-artifact@v4
